@@ -1,0 +1,115 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <Name>Weekl.Database</Name>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectVersion>4.1</ProjectVersion>
+    <ProjectGuid>{553b36b6-9beb-4e8e-b264-5c6d72dda387}</ProjectGuid>
+    <DSP>Microsoft.Data.Tools.Schema.Sql.Sql130DatabaseSchemaProvider</DSP>
+    <OutputType>Database</OutputType>
+    <RootPath>
+    </RootPath>
+    <RootNamespace>Weekl.Database</RootNamespace>
+    <AssemblyName>Weekl.Database</AssemblyName>
+    <ModelCollation>1033, CI</ModelCollation>
+    <DefaultFileStructure>BySchemaAndSchemaType</DefaultFileStructure>
+    <DeployToDatabase>True</DeployToDatabase>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetLanguage>CS</TargetLanguage>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <SqlServerVerification>False</SqlServerVerification>
+    <IncludeCompositeObjects>True</IncludeCompositeObjects>
+    <TargetDatabaseSet>True</TargetDatabaseSet>
+    <IncludeSchemaNameInFileName>True</IncludeSchemaNameInFileName>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <OutputPath>bin\Release\</OutputPath>
+    <BuildScriptName>$(MSBuildProjectName).sql</BuildScriptName>
+    <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <DefineDebug>false</DefineDebug>
+    <DefineTrace>true</DefineTrace>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <OutputPath>bin\Debug\</OutputPath>
+    <BuildScriptName>$(MSBuildProjectName).sql</BuildScriptName>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <DefineDebug>true</DefineDebug>
+    <DefineTrace>true</DefineTrace>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">11.0</VisualStudioVersion>
+    <!-- Default to the v11.0 targets path if the targets file for the current VS version is not found -->
+    <SSDTExists Condition="Exists('$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v$(VisualStudioVersion)\SSDT\Microsoft.Data.Tools.Schema.SqlTasks.targets')">True</SSDTExists>
+    <VisualStudioVersion Condition="'$(SSDTExists)' == ''">11.0</VisualStudioVersion>
+  </PropertyGroup>
+  <Import Condition="'$(SQLDBExtensionsRefPath)' != ''" Project="$(SQLDBExtensionsRefPath)\Microsoft.Data.Tools.Schema.SqlTasks.targets" />
+  <Import Condition="'$(SQLDBExtensionsRefPath)' == ''" Project="$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v$(VisualStudioVersion)\SSDT\Microsoft.Data.Tools.Schema.SqlTasks.targets" />
+  <ItemGroup>
+    <Folder Include="Properties" />
+    <Folder Include="FEED" />
+    <Folder Include="FEED\Tables" />
+    <Folder Include="FEED\Stored Procedures" />
+    <Folder Include="Security" />
+    <Folder Include="Security\Schemas" />
+    <Folder Include="Security\Roles" />
+    <Folder Include="FEED\Views" />
+    <Folder Include="Functions" />
+    <Folder Include="SYSTEM" />
+    <Folder Include="SYSTEM\Stored Procedures" />
+  </ItemGroup>
+  <ItemGroup>
+    <Build Include="FEED\Tables\FEED.Source.sql" />
+    <Build Include="FEED\Tables\FEED.Article.sql" />
+    <Build Include="FEED\Stored Procedures\FEED.SourceAdd.sql" />
+    <Build Include="Security\Schemas\FEED.sql" />
+    <Build Include="Security\Roles\AppRole.sql" />
+    <Build Include="FEED\Stored Procedures\FEED.SourceUpdate.sql" />
+    <Build Include="FEED\Stored Procedures\FEED.SourceGet.sql" />
+    <Build Include="FEED\Stored Procedures\FEED.SourceList.sql" />
+    <Build Include="FEED\Stored Procedures\FEED.ArticleAdd.sql" />
+    <Build Include="FEED\Stored Procedures\FEED.ArticleGet.sql" />
+    <Build Include="FEED\Stored Procedures\FEED.ArticleList.sql" />
+    <Build Include="FEED\Stored Procedures\FEED.ArticleUpdate.sql" />
+    <Build Include="FEED\Tables\FEED.Channel.sql" />
+    <Build Include="FEED\Stored Procedures\FEED.ChannelAdd.sql" />
+    <Build Include="FEED\Stored Procedures\FEED.ChannelGet.sql" />
+    <Build Include="FEED\Stored Procedures\FEED.ChannelList.sql" />
+    <Build Include="FEED\Stored Procedures\FEED.ChannelUpdate.sql" />
+    <Build Include="FEED\Stored Procedures\FEED.ChannelListBySourceId.sql" />
+    <Build Include="FEED\Stored Procedures\FEED.SourceImport.sql" />
+    <Build Include="FEED\Stored Procedures\FEED.SourceImportXml.sql" />
+    <Build Include="FEED\Stored Procedures\FEED.ArticleImport.sql" />
+    <Build Include="FEED\Stored Procedures\FEED.ArticleClean.sql" />
+    <Build Include="FEED\Tables\FEED.Category.sql" />
+    <Build Include="FEED\Views\FEED.ArticleView.sql" />
+    <Build Include="FEED\Views\FEED.ArticleWeekAgoView.sql" />
+    <Build Include="FEED\Views\FEED.SourceView.sql" />
+    <Build Include="FEED\Views\FEED.ChannelView.sql" />
+    <Build Include="FEED\Stored Procedures\FEED.ArticleImageAdd.sql" />
+    <Build Include="FEED\Stored Procedures\FEED.ArticleImportXml.sql" />
+    <Build Include="Functions\dbo.ToUnique.sql" />
+    <Build Include="SYSTEM\Stored Procedures\SYSTEM.GenerateUnique.sql" />
+    <Build Include="Security\Schemas\SYSTEM.sql" />
+    <Build Include="FEED\Tables\FEED.Ignore.sql" />
+    <Build Include="FEED\Stored Procedures\FEED.IgnoreAdd.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <RefactorLog Include="Weekl.Database.refactorlog" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Development.publish.xml" />
+    <None Include="Production.publish.xml" />
+  </ItemGroup>
+</Project>

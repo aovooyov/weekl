@@ -1,0 +1,13 @@
+<div class="container">
+    <div class="row">
+        <div class="col-md-12 col-lg-8 mt-3 mb-3">
+            <div class="card" *ngIf="article">
+                <div class="card-body">
+                    <h3 class="card-title" [innerHtml]="article.title"></h3>
+                    <p class="card-text" [innerHtml]="article.text"></p>
+                    <h6 class="card-subtitle mt-2 text-muted">{{article.date | date:'HH:mm'}}</h6>       
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Operations Version="1.0" xmlns="http://schemas.microsoft.com/sqlserver/dac/Serialization/2012/02">
+  <Operation Name="Rename Refactor" Key="79d04179-0940-422a-8d25-928cd8594a1a" ChangeDateTime="07/23/2018 17:26:11">
+    <Property Name="ElementName" Value="[FEED].[Article].[Body]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[FEED].[Article]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="Text" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="7f7bbc07-ad42-43bd-a10f-00dcad9fd18e" ChangeDateTime="08/05/2018 15:01:49">
+    <Property Name="ElementName" Value="[FEED].[Article].[SourceItemId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[FEED].[Article]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="ChannelId" />
+  </Operation>
+</Operations>

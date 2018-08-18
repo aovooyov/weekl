@@ -1,0 +1,64 @@
+<div class="container"
+    infiniteScroll
+    [infiniteScrollDistance]="2"
+    [infiniteScrollThrottle]="300"
+    (scrolled)="fetch()">
+
+    <div class="row">
+        <div class="col-md-12 col-lg-8">
+
+            <ng-container *ngIf="articles.length === 0">
+                <div class="row" *ngFor="let i of [1, 2, 3, 4, 5]">
+                    <div class="col-md mb-3">
+                        <h3 *ngIf="i === 1">
+                            <small class="text-muted">{{date | moment:'day'}}</small><br/>
+                            {{date | moment:'dayWeek'}}
+                        </h3>
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="card-placeholder-body">
+                                    <div></div>
+                                    <div></div>
+                                    <div></div>
+                                    <div></div>
+                                    <div></div>
+                                    <div></div>
+                                    <div></div>
+                                    <div></div>
+                                    <div></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </ng-container>
+
+            <ng-container *ngIf="articles.length > 0">
+                <div class="row" *ngFor="let article of articles; index as i;">
+                    <div class="col-md mb-3">
+                        <h3 *ngIf="article.header">
+                            <small class="text-muted">{{article.date | moment:'day'}}</small><br/>
+                            {{article.date | moment:'dayWeek'}}
+                        </h3>
+                        <div class="card">
+                            <img class="card-img-top" *ngIf="article.imageUrl" [src]="article.imageUrl" alt="" (error)="article.imageUrl = null">
+                            <div class="card-body">
+                                <h5 class="card-title"><a [routerLink]="['/' + article.unique]" [innerHtml]="article.title"></a></h5>
+                                <p class="card-text" *ngIf="article.description" [innerHtml]="article.description"></p>
+                                <h6 class="card-subtitle mt-2 text-muted float-right">{{article.date | date:'HH:mm'}}</h6>
+                                <h6 class="card-subtitle mt-2 float-left">
+                                    <img *ngIf="article.source.imageUrl" [src]="article.source.imageUrl" width="30" class="rounded mr-1" [alt]="article.source.name" (error)="article.source.imageUrl = null">
+                                    <a [href]="article.link" target="_blank" class="text-muted" [title]="article.source.link | link">{{article.source.name}}</a>
+                                </h6>
+                            </div>
+                            <!-- <img class="card-img-bottom" *ngIf="article.imageUrl" [src]="article.imageUrl" alt=""> -->
+                        </div>
+                    </div>
+                </div>
+            </ng-container>
+
+        </div>
+        <div class="col-md-2"></div>
+    </div>
+
+</div>
