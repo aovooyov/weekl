@@ -23,8 +23,13 @@
                 "output": "/assets"
               },
               {
-                "glob": "favicon.ico",
-                "input": "src",
+                "glob": "**/*",
+                "input": "src/favicon",
+                "output": "/"
+              },
+              {
+                "glob": "web.config",
+                "input": "/",
                 "output": "/"
               }
             ],

@@ -1,9 +1,27 @@
-﻿namespace Weekl.Core.Models
+﻿using System;
+using System.Collections.Generic;
+using System.Xml.Serialization;
+using Weekl.Core.Helper;
+
+namespace Weekl.Core.Models
 {
+    [Serializable]
     public class FilterXml
     {
-        public int[] SourceId { get; set; }
+        public FilterXml()
+        {
+            Sources = new List<int>();
+        }
 
-        public static string Empty => "<Filter><Source></Source></Filter>";
+        [XmlAttribute]
+        public string SourceUnique { get; set; }
+
+        [XmlArray("Sources")]
+        [XmlArrayItem("Source")]
+        public List<int> Sources { get; set; }
+
+        public static FilterXml Empty => new FilterXml();
+
+        public static FilterXml BySource(string sourceUnique) => new FilterXml { SourceUnique = sourceUnique };
     }
 }

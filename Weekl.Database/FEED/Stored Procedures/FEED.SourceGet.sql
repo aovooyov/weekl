@@ -14,8 +14,13 @@ as
     set cursor_close_on_commit off
 begin	
 
-	select * 
-	from [FEED].[Source]
+	select 
+		[Id],
+		[Name],
+		[Link],
+		[ImageUrl],
+		[Unique]
+	from [FEED].[SourceView]
 	where [Id] = @sourceId
 
 	return 0;

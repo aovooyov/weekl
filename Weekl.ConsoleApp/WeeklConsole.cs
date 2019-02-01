@@ -4,6 +4,7 @@ using System.Configuration;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using Weekl.Core.Helper;
 using Weekl.Core.Models;
 using Weekl.Core.Repository.Feed;
@@ -32,24 +33,8 @@ namespace Weekl.ConsoleApp
 
             _rssService = new RssService(_sourceRepository, _channelRepository, _articleRepository);
         }
-        
-        public void ReadFeed(int sourceId)
-        {
-            _stopwatch.Restart();
 
-            var articles = _rssService.GetFeed(sourceId);
-
-            foreach (var article in articles)
-            {
-                Console.WriteLine($"{article.Date}\n{article.Title}\n{article.SubTitle}\n{article.Description}\n{article.Link}\n{article.Category}\n\n");
-                Console.WriteLine($"{article.Text}\n");
-            }
-
-            var time = _stopwatch.Elapsed.TotalMilliseconds;
-            Console.WriteLine($"Average time {time}");
-        }
-
-        public void ReadFeed()
+        public async Task ReadFeed()
         {
             var times = new List<double>();
 
@@ -63,7 +48,7 @@ namespace Weekl.ConsoleApp
                 times.Add(time);
                 _stopwatch.Restart();
 
-                var articles = _rssService.GetFeed(source);
+                var articles = await _rssService.GetFeed(source);
 
                 foreach (var article in articles)
                 {
@@ -122,18 +107,18 @@ namespace Weekl.ConsoleApp
             {
                 new SourceXml
                 {
-                    Name = "Rozetked",
-                    Source = "https://rozetked.me/",
-                    Channel = "https://rozetked.me/rss",
-                    Encoding = "utf-8"
+                    Name = "Газета.Ru - Первая полоса",
+                    Source = "https://www.gazeta.ru",
+                    Channel = "https://www.gazeta.ru/export/rss/first.xml",
+                    Encoding = "ISO-8859-1"
                 },
                 new SourceXml
                 {
-                    Name = "Prometheus",
-                    Source = "https://prometheus.ru/",
-                    Channel = "https://prometheus.ru/feed/rss",
-                    Encoding = "utf-8"
-                },
+                    Name = "Газета.Ru - Новости дня",
+                    Source = "https://www.gazeta.ru",
+                    Channel = "https://www.gazeta.ru/export/rss/lenta.xml",
+                    Encoding = "ISO-8859-1"
+                }
             };
 
             _sourceRepository.Import(sources);

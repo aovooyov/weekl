@@ -18,10 +18,28 @@ begin
 
 	if @articleId is not null
 	begin
-		select * 
-		from [FEED].[Article]
-		where [Id] = @articleId
-		order by [Date] desc
+		select 
+			a.[Id],
+			a.[Link],
+			a.[Title],
+			a.[SubTitle],
+			a.[Description],
+			a.[Text],
+			a.[Date],
+			a.[ImageUrl],
+			a.[Unique],
+
+			a.[ChannelId],
+			c.[Name] as ChannelName,
+			
+			c.[SourceId],
+			c.[SourceName],
+			c.[SourceLink],
+			c.[SourceImageUrl],
+			c.[SourceUnique]
+		from [FEED].[Article] a
+			inner join [FEED].[ChannelView] c on c.[Id] = a.[ChannelId]
+		where a.[Id] = @articleId
 	end
 
 	if @source is not null and @unique is not null
@@ -29,14 +47,31 @@ begin
 		declare @articleUnique nvarchar(350);
 		set @articleUnique = concat(@source, N'/', @unique, N'/')
 		
-		select top 1 * 
-		from [FEED].[Article]
-		where [Unique] = @articleUnique
-		order by [Date] desc
+		select top 1 
+			a.[Id],
+			a.[Link],
+			a.[Title],
+			a.[SubTitle],
+			a.[Description],
+			a.[Text],
+			a.[Date],
+			a.[ImageUrl],
+			a.[Unique],
+
+			a.[ChannelId],
+			c.[Name] as ChannelName,
+			
+			c.[SourceId],
+			c.[SourceName],
+			c.[SourceLink],
+			c.[SourceImageUrl],
+			c.[SourceUnique]
+		from [FEED].[Article] a
+			inner join [FEED].[ChannelView] c on c.[Id] = a.[ChannelId]
+		where a.[Unique] = @articleUnique
 	end
 
     return 0;
-
 end
 go
 grant execute

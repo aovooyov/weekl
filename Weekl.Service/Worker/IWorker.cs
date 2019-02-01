@@ -1,7 +1,11 @@
-﻿namespace Weekl.Service.Worker
+﻿using System.Threading.Tasks;
+
+namespace Weekl.Service.Worker
 {
     public interface IWorker
     {
-        void SyncFeed();
+        Task SyncFeed();
+        Task SyncFeed(int sourceId);
+        Task SyncFeedAsync();
     }
 }

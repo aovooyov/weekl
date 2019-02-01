@@ -5,6 +5,7 @@ import { isPlatformServer } from '@angular/common';
 
 import { ApiService } from '../services/api.service';
 import { Article } from '../models/article.model';
+import { MetaService } from '@ngx-meta/core';
 
 const articleState = makeStateKey('main-article');
 
@@ -23,8 +24,7 @@ export class ArticleComponent implements OnInit {
         private state: TransferState,
         @Inject(PLATFORM_ID) 
         private platformId,
-        private title: Title,
-        private meta: Meta   
+        private meta: MetaService
     ) {
     }
 
@@ -32,6 +32,7 @@ export class ArticleComponent implements OnInit {
 
         if(this.state.hasKey(articleState)) {
             this.article = this.state.get<Article>(articleState, null);
+            this.setMeta(this.article);
             this.state.remove(articleState);
             return;
         }
@@ -78,7 +79,13 @@ export class ArticleComponent implements OnInit {
     }
 
     setMeta(article: Article) {
-        this.title.setTitle(article.title + ' | weekl');
-        this.meta.addTag({ name: 'description', content: article.description });
+        this.meta.setTitle(article.title);
+        this.meta.setTag('description', article.description);
+
+        if(article.imageUrl) {
+            this.meta.setTag('image', article.imageUrl);
+            this.meta.setTag('og:image', article.imageUrl);
+            this.meta.setTag('vk:image', article.imageUrl);
+        }
     }
 }

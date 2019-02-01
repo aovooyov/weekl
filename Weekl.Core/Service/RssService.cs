@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using CodeHollow.FeedReader;
 using NLog;
@@ -32,60 +33,47 @@ namespace Weekl.Core.Service
             _logger = LogManager.GetCurrentClassLogger();
         }
 
-        public IEnumerable<ArticleXml> GetFeed()
+        public async Task<ICollection<ArticleXml>> GetFeed()
         {
             var sources = _sourceRepository.List();
             var articles = new List<ArticleXml>();
 
             foreach (var source in sources)
             {
-                articles.AddRange(GetFeed(source));
+                articles.AddRange(await GetFeed(source));
             }
 
             return articles;
         }
         
-        public IEnumerable<ArticleXml> GetFeed(int sourceId)
-        {
-            var source = _sourceRepository.Get(sourceId);
-            if (source == null)
-            {
-                throw new NullReferenceException();
-            }
-
-            return GetFeed(source);
-        }
-
-        public IEnumerable<ArticleXml> GetFeed(Source source)
+        public async Task<ICollection<ArticleXml>> GetFeed(SourceItem source)
         {
             if (source == null)
             {
                 throw new ArgumentNullException();
             }
 
-            _logger.Info($"Source: {source.Name}");
-
             var channels = _channelRepository.ListBySourceId(source.Id);
             var articles = new List<ArticleXml>();
 
-            _logger.Info($"Channels: {channels.Count()}");
+            _logger.Info($"[{source.Unique}] Source: {source.Name}, Channels: {channels.Count()}");
 
             foreach (var channel in channels)
             {
-                articles.AddRange(GetFeed(channel));
+                articles.AddRange(await GetFeed(channel));
             }
 
             return articles;
         }
 
-        public IEnumerable<ArticleXml> GetFeed(Channel channel)
+        public async Task<ICollection<ArticleXml>> GetFeed(ChannelItem channel)
         {
             if (channel == null)
             {
                 throw new ArgumentNullException();
             }
 
-            _logger.Info($"Channel:\n{channel.Name}\n{channel.Link}");
+            _logger.Info($"[{channel.SourceUnique}] Channel: {channel.Name} {channel.Link}");
 
             var articles = new List<ArticleXml>();
             Feed feed;
@@ -128,11 +116,19 @@ namespace Weekl.Core.Service
 
             foreach (var item in items)
             {
-                Debug.WriteLine($"Categories: {string.Join("; ", item.Categories)}");
-                Debug.WriteLine($"Content: {item.Content}");
-                Debug.WriteLine($"Author: {item.Author}");
-                Debug.WriteLine($"Id: {item.Id}");
-                Debug.WriteLine($"Link: {item.Link}");
+                //Debug.WriteLine($"Categories: {string.Join("; ", item.Categories)}");
+                //Debug.WriteLine($"Content: {item.Content}");
+                //Debug.WriteLine($"Author: {item.Author}");
+                //Debug.WriteLine($"Id: {item.Id}");
+                //Debug.WriteLine($"Link: {item.Link}");
+
+
+                DateTime? date = null;
+                if (!string.IsNullOrEmpty(item.PublishingDateString))
+                {
+                    var dateString = Regex.Replace(item.PublishingDateString, "\\+0(\\d)00", string.Empty);
+                    date = DateTime.Parse(dateString);
+                }
 
                 var article = new ArticleXml
                 {
@@ -141,79 +137,200 @@ namespace Weekl.Core.Service
                     SubTitle = item.Content,
                     Description = item.Description,
                     Link = item.Link,
-                    Date = item.PublishingDate ?? DateTime.Now,
+                    Date = date ?? item.PublishingDate ?? DateTime.Now,
                     Category = string.Join("; ", item.Categories)
                 };
 
-                Debug.WriteLine(
-                    $"{article.Date}\n{article.Title}\n{article.SubTitle}\n{article.Description}\n{article.Link}\n{article.Category}\n\n");
+                //Debug.WriteLine(
+                //    $"{article.Date}\n{article.Title}\n{article.SubTitle}\n{article.Description}\n{article.Link}\n{article.Category}\n\n");
 
-                try
-                {
-                    FillArticleContent(article);
-                    Debug.WriteLine($"{article.Text}\n");
+                await FillArticleContentAsync(article);
 
-                    articles.Add(article);
-                }
-                catch (Exception e)
-                {
-                    Debug.WriteLine(e.ToString());
-                }
+                articles.Add(article);
 
                 var time = stopwatch.Elapsed.TotalMilliseconds;
                 times.Add(time);
                 stopwatch.Restart();
-
-                _logger.Info(article.Title);
-                _logger.Info(article.Link);
-                _logger.Info($"Time: {time}");
+                
+                //Debug.WriteLine(article.Title);
+                //Debug.WriteLine(article.Link);
+                //Debug.WriteLine($"Time: {time}");
             }
 
-            _logger.Info($"Articles: {articles.Count}");
-            _logger.Info($"Average: {times.Average()}");
+            //Debug.WriteLine($"Articles: {articles.Count}");
+            //Debug.WriteLine($"Average: {times.Average()}");
 
             return articles;
         }
 
-        public double SyncFeed(params int[] sourceIds)
+        public async Task<int> SyncFeed()
         {
             var stopwatch = Stopwatch.StartNew();
-            var sources = _sourceRepository.List(sourceIds);
+            var sources = _sourceRepository.List();
+            var articleCount = 0;
 
             foreach (var source in sources)
             {
-                _logger.Info($"Source: {source.Name}");
-
                 var channels = _channelRepository.ListBySourceId(source.Id);
 
-                _logger.Info($"Channels: {channels.Count()}");
+                _logger.Info($"[{source.Unique}] Source: {source.Name}, Channels: {channels.Count()}");
 
                 foreach (var channel in channels)
                 {
-                    var articles = GetFeed(channel);
-                    if (!articles.Any())
-                    {
-                        continue;
-                    }
-
-                    try
-                    {
-                        _articleRepository.Import(articles);
-                        _logger.Info("Articles imported success");
-                    }
-                    catch (Exception e)
-                    {
-                        _logger.Error(e);
-                    }
+                    articleCount += await SyncFeed(channel);
                 }
             }
 
-            _articleRepository.Clean();
-
             var time = stopwatch.Elapsed.TotalMilliseconds;
             stopwatch.Stop();
+            _logger.Info($"Total time: {time}");
 
-            return time;
+            return articleCount;
+        }
+
+        public async Task<int> SyncFeed(SourceItem source)
+        {
+            if (source == null)
+            {
+                return 0;
+            }
+
+            var channels = _channelRepository.ListBySourceId(source.Id);
+            var articleCount = 0;
+
+            _logger.Info($"[{source.Unique}] {source.Name}, Channels: {channels.Count}");
+
+            foreach (var channel in channels)
+            {
+                articleCount += await SyncFeed(channel);
+            }
+
+            return articleCount;
+        }
+
+        public async Task<int> SyncFeed(ChannelItem channel)
+        {
+            if (channel == null)
+            {
+                throw new ArgumentNullException();
+            }
+
+            _logger.Info($"[{channel.SourceUnique}] Channel: {channel.Name} {channel.Link}");
+
+            Feed feed;
+
+            try
+            {
+                var feedContent = RequestHelper.Get(channel.Link, channel.Encoding);
+                feed = FeedReader.ReadFromString(feedContent);
+            }
+            catch (Exception e)
+            {
+                _logger.Error($"[{channel.SourceUnique}] Error: {e.Message}");
+                _logger.Error(e.StackTrace);
+                return 0;
+            }
+
+            try
+            {
+                _sourceRepository.Update(
+                    channel.SourceId,
+                    feed.Description,
+                    feed.ImageUrl
+                );
+            }
+            catch (Exception e)
+            {
+                _logger.Error(e);
+            }
+
+            var items = feed.Items
+                .Where(i => i.PublishingDate?.Date >= channel.DateUpdated.Date)
+                .ToList();
+
+            if (items.Count == 0)
+            {
+                return 0;
+            }
+
+            var articlesCount = 0;
+            var articles = new List<ArticleXml>();
+
+            foreach (var item in items)
+            {
+                //Debug.WriteLine($"Categories: {string.Join("; ", item.Categories)}");
+                //Debug.WriteLine($"Content: {item.Content}");
+                //Debug.WriteLine($"Author: {item.Author}");
+                //Debug.WriteLine($"Id: {item.Id}");
+                //Debug.WriteLine($"Link: {item.Link}");
+
+                DateTime? date = null;
+                if (!string.IsNullOrEmpty(item.PublishingDateString))
+                {
+                    var dateString = Regex.Replace(item.PublishingDateString, "\\+0(\\d)00", string.Empty);
+                    date = DateTime.Parse(dateString);
+
+                    _logger.Trace($"[{channel.SourceUnique}] PublishingDateString: {item.PublishingDateString}, PublishingDate: {item.PublishingDate}, Date: {date}");
+                }
+
+                var article = new ArticleXml
+                {
+                    ChannelId = channel.Id,
+                    Title = item.Title,
+                    SubTitle = item.Content,
+                    Description = item.Description,
+                    Link = item.Link,
+                    Date = date ?? item.PublishingDate ?? DateTime.Now,
+                    Category = string.Join("; ", item.Categories)
+                };
+
+                //Debug.WriteLine(
+                //    $"{article.Date}\n{article.Title}\n{article.SubTitle}\n{article.Description}\n{article.Link}\n{article.Category}\n\n");
+
+                await FillArticleContentAsync(article);
+
+                articles.Add(article);
+
+                if (articles.Count < 10)
+                {
+                    continue;
+                }
+
+                try
+                {
+                    _articleRepository.Import(articles);
+
+                    _logger.Info($"[{channel.SourceUnique}] Articles: {articles.Count}");
+                    articlesCount += articles.Count;
+                }
+                catch (Exception e)
+                {
+                    _logger.Error(e);
+                }
+
+                articles.Clear();
+            }
+
+            if (articles.Count == 0)
+            {
+                return articlesCount;
+            }
+            
+            try
+            {
+                _articleRepository.Import(articles);
+
+                _logger.Info($"[{channel.SourceUnique}] Articles: {articles.Count}");
+                articlesCount += articles.Count;
+            }
+            catch (Exception e)
+            {
+                _logger.Error(e);
+            }
+
+            articles.Clear();
+            
+            return articlesCount;
         }
 
         //public string GetArticleContent(string link, string queryCssSelector, string encoding)
@@ -235,17 +352,6 @@ namespace Weekl.Core.Service
 
         //    return content;
         //}
-
-        public void FillArticleContent(ArticleXml article)
-        {
-            if (string.IsNullOrEmpty(article?.Link))
-            {
-                return;
-            }
-
-            var contentTask = FillArticleContentAsync(article);
-            contentTask.Wait();
-        }
 
         public async Task FillArticleContentAsync(ArticleXml article)
         {
@@ -276,9 +382,14 @@ namespace Weekl.Core.Service
             }
             catch (ReadException e)
             {
-                _logger.Info($"Article link: {article.Link}");
-                _logger.Error(e);
+                _logger.Error($"Article: {article.Link}", e);
             }
+        }
+
+        public void Clean()
+        {
+            _articleRepository.Clean();
         }
     }
 }
+

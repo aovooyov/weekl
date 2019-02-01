@@ -17,7 +17,6 @@ as
     set cursor_close_on_commit off
 begin	
 
-
 	--declare @xmlPointer int;
 	--exec sys.sp_xml_preparedocument @xmlPointer output, @filter;
  --   create table #filter (
@@ -26,10 +25,29 @@ begin
 	--insert into #filter ([SourceId])
  --   select 
  --       [SourceId]
- --   from openxml (@xmlPointer, '/Filter/Source')
+ --   from openxml (@xmlPointer, '/FilterXml/Sources/Source')
  --   with (
 	--	[SourceId] int '@SourceId')
 	--where 1 = 1;
+
+		
+	declare @sourceUnique nvarchar(150);
+	declare @sourceId int;
+
+	declare @xmlPointer int;
+	exec sys.sp_xml_preparedocument @xmlPointer output, @filter;
+
+	set @sourceUnique = (
+		select *
+		from openxml (@xmlPointer, '/FilterXml')
+		with ([SourceUnique] nvarchar(150) '@SourceUnique'))
+
+	exec sys.sp_xml_removedocument @xmlPointer;
+
+	if @sourceUnique is not null 
+	begin
+		set @sourceId = (select [Id] from [SourceView] where [Unique] = @sourceUnique);
+	end
 
 	declare @from datetime2(7);
 	declare @to datetime2(7);
@@ -53,9 +71,8 @@ begin
 			[SourceImageUrl],
 			[SourceUnique]
 		from [FEED].[ArticleView]
-		where @from >= [Date] and @to <= [Date]
+		where (@from >= [Date] and @to <= [Date]) and (@sourceId is null or [SourceId] = @sourceId)
 	)
-
 	select 
 		[Id],
 		[Link],
@@ -70,6 +87,7 @@ begin
 		[SourceImageUrl],
 		[SourceUnique]
 	from #articles
+	--where (@sourceId is null or [SourceId] = @sourceId)
 	order by [Date] desc
 	offset @offset rows
 	fetch next @take rows only

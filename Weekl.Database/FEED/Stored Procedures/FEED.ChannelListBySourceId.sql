@@ -13,8 +13,19 @@ as
     set implicit_transactions off
     set cursor_close_on_commit off
 begin	
-	select * 
-	from [FEED].[Channel]
+	select 
+		[Id], 
+		[Name], 
+		[Link], 
+		[Encoding],
+		[Selector],
+		[DateUpdated],
+		[SourceId], 
+		[SourceName],
+		[SourceLink],
+		[SourceImageUrl],
+		[SourceUnique]
+	from [FEED].[ChannelView]
 	where [SourceId] = @sourceId
 	order by [Name] asc
 

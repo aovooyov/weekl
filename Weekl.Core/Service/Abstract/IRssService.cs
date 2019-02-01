@@ -7,13 +7,15 @@ namespace Weekl.Core.Service.Abstract
 {
     public interface IRssService
     {
-        IEnumerable<ArticleXml> GetFeed();
-        IEnumerable<ArticleXml> GetFeed(int sourceId);
-        IEnumerable<ArticleXml> GetFeed(Source source);
-        IEnumerable<ArticleXml> GetFeed(Channel channel);
+        Task<ICollection<ArticleXml>> GetFeed();
+        Task<ICollection<ArticleXml>> GetFeed(SourceItem source);
+        Task<ICollection<ArticleXml>> GetFeed(ChannelItem channel);
 
-        double SyncFeed(params int[] sourceIds);
-        void FillArticleContent(ArticleXml article);
+        Task<int> SyncFeed();
+        Task<int> SyncFeed(SourceItem source);
+        Task<int> SyncFeed(ChannelItem channel);
+
         Task FillArticleContentAsync(ArticleXml article);
+        void Clean();
     }
 }

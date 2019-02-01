@@ -9,7 +9,7 @@ namespace Weekl.Core.Repository.Feed.Abstract
         Channel Add(int sourceId, string name, string link, string selector, string encoding, ChannelType type);
         Channel Update(int channelId, string name, string link, string selector, string encoding, ChannelType type);
         Channel Get(int channelId);
-        IEnumerable<Channel> List();
-        IEnumerable<Channel> ListBySourceId(int sourceId);
+        ICollection<Channel> List();
+        ICollection<ChannelItem> ListBySourceId(int sourceId);
     }
 }

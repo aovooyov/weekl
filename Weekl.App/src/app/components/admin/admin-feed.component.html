@@ -1,0 +1,77 @@
+<div class="container">
+    <div class="row">
+        <div class="col-md">
+            <button *ngFor="let source of sources" type="button" class="btn btn-outline-dark text-left mr-1 mb-1" (click)="selectSource(source)">
+                {{source.name}}
+            </button>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md">
+            <div class="btn-group mr-1 mb-1" *ngFor="let channel of channels">
+                <button type="button" class="btn btn-outline-secondary text-left">
+                    {{channel.name}}
+                </button>
+                <button type="button" class="btn btn-outline-secondary" (click)="selectChannel(channel)">
+                    <i class="fas fa-pen"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <div class="row" *ngFor="let article of articles">
+                <div class="col-md mb-3">
+                    <div class="card">
+                        <img class="card-img-top" *ngIf="article.imageUrl" [src]="article.imageUrl" alt="" (error)="article.imageUrl = null">
+                        <div class="card-body">
+                            <h4 class="card-title"><a class="text-dark" (click)="selectArticle(article)" [innerHtml]="article.title"></a></h4>
+                            <p class="card-text" *ngIf="article.description" [innerHtml]="article.description"></p>
+                            <h6 class="card-subtitle mt-2 text-muted float-right">{{article.date | date:'HH:mm'}}</h6>
+                            <h6 class="card-subtitle mt-2 float-left" *ngIf="!source">
+                                <img *ngIf="article.source.imageUrl" [src]="article.source.imageUrl" width="30" class="rounded mr-1" [alt]="article.source.name" (error)="article.source.imageUrl = null">
+                                <a [href]="article.link" target="_blank" class="text-muted" [title]="article.source.link | link">{{article.source.name}}</a>
+                            </h6>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card" *ngIf="article">
+                <div class="card-body">
+                    <h3 class="card-title" [innerHtml]="article.title"></h3>
+                    <p class="card-text" [innerHtml]="article.text"></p>
+                </div>
+                <div class="card-footer">
+                    <h6 class="float-right">{{article.date | date:'HH:mm'}}</h6>
+                    <h6 class="float-left">
+                        <a [href]="article.link" target="_blank" [title]="article.source.link | link">Читать на {{article.source.name}}</a>
+                    </h6>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<sidebar>
+    <div class="row">
+        <div class="col-md">
+                <form>
+                    <div class="form-group">
+                        <label for="exampleInputEmail1">Email address</label>
+                        <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter email">
+                        <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="exampleInputPassword1">Password</label>
+                        <input type="password" class="form-control" id="exampleInputPassword1" placeholder="Password">
+                    </div>
+                    <div class="form-group form-check">
+                        <input type="checkbox" class="form-check-input" id="exampleCheck1">
+                        <label class="form-check-label" for="exampleCheck1">Check me out</label>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </form>
+        </div>
+    </div>
+</sidebar>

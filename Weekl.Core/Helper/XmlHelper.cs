@@ -40,17 +40,15 @@ namespace Weekl.Core.Helper
             }
         }
 
-        public static string ArrayToXml(params int[] array)
+        public static string FilterToXml(FilterXml filter)
         {
-            var builder = new StringBuilder("<Array>");
+            var formatter = new XmlSerializer(typeof(FilterXml));
 
-            foreach (var i in array)
+            using (var stringWriter = new StringWriter())
             {
-                builder.AppendLine($"<Item Value=\"{i}\"></Item>");
+                formatter.Serialize(stringWriter, filter);
+                return stringWriter.ToString();
             }
-
-            builder.AppendLine("</Array>");
-            return builder.ToString();
         }
     }
 }

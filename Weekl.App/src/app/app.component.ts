@@ -1,5 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import { Title, Meta } from '@angular/platform-browser';
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { FilterComponent } from './components/filter.component';
 
 @Component({
   selector: 'app',
@@ -7,16 +7,17 @@ import { Title, Meta } from '@angular/platform-browser';
 })
 export class AppComponent implements OnInit {
 
+  @ViewChild(FilterComponent) filter: FilterComponent;
 
-  constructor(
-    private title: Title,
-    private meta: Meta
-  ) {
+  constructor() {
     
   }
 
   ngOnInit() {
-    // this.title.setTitle('weekl - твой поток информации');
-    // this.meta.addTag({name: 'description', content: 'что проихсодит'});
+  }
+
+  openFilter(e: Event) {
+    e.preventDefault();
+    this.filter.sidebar.toggle();
   }
 }

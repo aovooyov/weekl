@@ -1,11 +1,56 @@
 <div class="container">
     <div class="row">
+        <div class="col-md-12">
+            <ng-container *ngIf="!article">
+                <div class="source-placeholder">
+                </div>
+            </ng-container>
+            <p class="display-4" *ngIf="article">
+                <!-- <img *ngIf="article.source.imageUrl" [src]="article.source.imageUrl" height="44" class="rounded mr-2" [alt]="article.source.name" (error)="article.source.imageUrl = null"> -->
+                <a class="text-dark" [routerLink]="['/'] + article.source.unique">{{article.source.name}}</a>
+            </p>
+        </div>
+    </div>
+    <div class="row">
         <div class="col-md-12 col-lg-8 mt-3 mb-3">
+            <ng-container *ngIf="!article">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="card-placeholder-body">
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                        </div>
+                    </div>
+                </div>
+            </ng-container>
             <div class="card" *ngIf="article">
                 <div class="card-body">
                     <h3 class="card-title" [innerHtml]="article.title"></h3>
                     <p class="card-text" [innerHtml]="article.text"></p>
-                    <h6 class="card-subtitle mt-2 text-muted">{{article.date | date:'HH:mm'}}</h6>       
+                </div>
+                <div class="card-footer">
+                    <h6 class="float-right">{{article.date | date:'HH:mm'}}</h6>
+                    <h6 class="float-left">
+                        <a [href]="article.link" target="_blank" [title]="article.source.link | link">Читать на {{article.source.name}}</a>
+                    </h6>
                 </div>
             </div>
         </div>

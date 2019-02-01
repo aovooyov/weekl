@@ -1,6 +1,12 @@
-<nav class="navbar navbar-light bg-light">
-    <div class="container">
-      <a class="navbar-brand lead" [routerLink]="['/']">weekl</a>
-    </div>  
-  </nav>
-  <router-outlet></router-outlet>
+<nav class="navbar navbar-light">
+  <div class="container">
+    <a class="navbar-brand lead" [routerLink]="['/']">WEEKL</a>
+    <form class="form-inline">
+        <a class="navbar-brand" (click)="openFilter($event)">
+          <img src="../assets/img/anonym.png" width="34" height="34" alt="anonym">
+        </a>    
+    </form>
+  </div>
+</nav>
+<filter></filter>
+<router-outlet></router-outlet>

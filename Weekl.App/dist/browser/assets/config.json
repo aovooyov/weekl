@@ -1,0 +1,27 @@
+{
+    "system": {
+        "applicationName": "Weekl",
+        "applicationUrl": "http://weekl.space"
+    },
+    "seo": {
+        "defaultPageTitle": "Weekl - новости и статьи за неделю",
+        "pageTitlePositioning": 10,
+        "pageTitleSeparator": " - ",
+        "defaultMetaDescription": "Новостной агрегатор Weekl - новости и статьи за неделю"
+    },
+    "i18n": {
+        "defaultLanguage": {
+            "code": "ru",
+            "name": "Russian",
+            "culture": "ru-RU"
+        },
+        "availableLanguages": [
+            {
+                "code": "ru",
+                "name": "Russian",
+                "culture": "ru-RU"
+            }
+        ],
+        "useLocalizedRoutes": false
+    }
+}

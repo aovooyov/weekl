@@ -1,4 +1,6 @@
 ﻿using System;
+using Weekl.Core.Helper;
+using Weekl.Core.Models;
 
 namespace Weekl.ConsoleApp
 {
@@ -11,7 +13,8 @@ namespace Weekl.ConsoleApp
             Console.WriteLine("Press any key to start");
             Console.ReadKey();
 
-            _weekl.SyncFeed();
+            var task = _weekl.ReadFeed();
+            task.Wait();
 
             Console.ReadKey();
         }

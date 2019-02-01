@@ -47,14 +47,14 @@ namespace Weekl.Core.Repository.Feed
             return Get<Channel>("FEED.ChannelGet", CommandType.StoredProcedure, GetParameter("@channelId", channelId));
         }
 
-        public IEnumerable<Channel> List()
+        public ICollection<Channel> List()
         {
             return GetList<Channel>("FEED.ChannelList", CommandType.StoredProcedure);
         }
 
-        public IEnumerable<Channel> ListBySourceId(int sourceId)
+        public ICollection<ChannelItem> ListBySourceId(int sourceId)
         {
-            return GetList<Channel>("FEED.ChannelListBySourceId", CommandType.StoredProcedure, GetParameter("@sourceId", sourceId));
+            return GetList<ChannelItem>("FEED.ChannelListBySourceId", CommandType.StoredProcedure, GetParameter("@sourceId", sourceId));
         }
     }
 }

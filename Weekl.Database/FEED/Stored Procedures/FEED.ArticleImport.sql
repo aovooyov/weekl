@@ -37,11 +37,19 @@ begin
         return 1;
     end
 
+	declare @sourceUnique nvarchar(150);
+	set @sourceUnique = (
+		select c.[SourceUnique] from [FEED].[ChannelView] c
+		where c.[Id] = @channelId);
+
+	declare @articleUnique nvarchar(350);
+	set @articleUnique = concat(@sourceUnique, N'/', [dbo].[ToUnique](@title), N'/');
+
 	declare @articleId int;
 	set @articleId = (
-		select top 1 [Id] 
+		select [Id] 
 		from [FEED].[Article] 
-		where [Link] = @link);
+		where [Unique] = @articleUnique);
 
 	declare @xmlPointer int;
 	exec sys.sp_xml_preparedocument @xmlPointer output, @images
@@ -63,16 +71,10 @@ begin
 
 	drop table #image
 
-	declare @sourceUnique nvarchar(150);
-	set @sourceUnique = (
-		select top 1 s.[Unique] from [FEED].[Source] s
-			inner join [FEED].[Channel] c on c.[SourceId] = s.[Id]
-		where c.[Id] = @channelId)
-
 	if @articleId is null
 	begin
 		insert [FEED].[Article]([ChannelId], [Title], [SubTitle], [Description], [Text], [Link], [Date], [ImageUrl], [Unique])
-		select @channelId, @title, @subtitle, @description, @text, @link, @date, @imageUrl, concat(@sourceUnique, N'/', [dbo].[ToUnique](@title), N'/')
+		select @channelId, @title, @subtitle, @description, @text, @link, @date, @imageUrl, @articleUnique
 			
 		set @articleId = scope_identity();
 	end
@@ -84,8 +86,9 @@ begin
 			[SubTitle] = @subtitle,
 			[Description] = @description,
 			[Text] = @text,
+			[Date] = @date,
 			[ImageUrl] = @imageUrl,
-			[Unique] = concat(@sourceUnique, N'/', [dbo].[ToUnique](@title), N'/')
+			[Link] = @link
 		where [Id] = @articleId
 	end
 

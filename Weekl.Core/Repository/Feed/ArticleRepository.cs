@@ -56,11 +56,13 @@ namespace Weekl.Core.Repository.Feed
             return Get<Article>("FEED.ArticleGet", CommandType.StoredProcedure, GetParameter("@articleId", (int?)null), GetParameter("@source", source), GetParameter("@unique", unique));
         }
 
-        public IEnumerable<ArticleItem> List(string filter, DateTime date, int offset, int take)
+        public ICollection<ArticleItem> List(FilterXml filter, DateTime date, int offset, int take)
         {
+            var filterXml = XmlHelper.FilterToXml(filter);
+
             var parameters = new[]
             {
-                GetParameter("@filter", filter),
+                GetParameter("@filter", filterXml),
                 GetParameter("@date", date),
                 GetParameter("@offset", offset),
                 GetParameter("@take", take)
@@ -69,7 +71,7 @@ namespace Weekl.Core.Repository.Feed
             return GetList<ArticleItem>("FEED.ArticleList", CommandType.StoredProcedure, parameters);
         }
 
-        public void Import(IEnumerable<ArticleXml> articles)
+        public void Import(ICollection<ArticleXml> articles)
         {
             var xml = XmlHelper.ArticlesToXml(articles);
             ExecuteNonQuery("FEED.ArticleImportXml", GetParameter("@articles", xml));

@@ -1,4 +1,5 @@
 ﻿create view [FEED].[SourceView]
+with schemabinding
 as
 	select 
 		[Id],

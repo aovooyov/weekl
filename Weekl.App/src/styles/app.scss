@@ -1,5 +1,10 @@
+
 @import 'variables';
 @import '../../node_modules/bootstrap/scss/bootstrap';
+@import '../../node_modules/@fortawesome/fontawesome-free/scss/fontawesome';
+@import '../../node_modules/@fortawesome/fontawesome-free/scss/brands';
+@import '../../node_modules/@fortawesome/fontawesome-free/scss/regular';
+@import '../../node_modules/@fortawesome/fontawesome-free/scss/solid';
 
 .card .card-text img {
     width: 100%!important;
@@ -8,7 +13,7 @@
 }
 
 .card-placeholder-body {
-    height: 205px;
+    height: 215px;
     overflow: hidden;
     background: #000;
     position: relative;
@@ -39,7 +44,7 @@
         
         &:nth-child(1) {
             top: 0px;
-            left: 80%;
+            left: 95%;
         }
         
         &:nth-child(2) {
@@ -49,7 +54,7 @@
         
         &:nth-child(3) {
             top: 20px;
-            left: 90%;
+            left: 80%;
         }
         
         &:nth-child(4) {
@@ -60,7 +65,7 @@
         
         &:nth-child(5) {
             top: 45px;
-            left: 60%;
+            left: 99%;
         }
         
         &:nth-child(6) {
@@ -83,21 +88,104 @@
             left: 0;
         }
 
-        // &:nth-child(10) {
-        //     top: 149px;
-        //     height: 12px;
-        //     left: 0;
-        // }
+        &:nth-child(10) {
+            top: 105px;
+            left: 85%;
+        }
         
-        // &:nth-child(11) {
-        //     top: 183px;
-        //     left: 0;
-        //     height: 100%;
-        // }
+        &:nth-child(11) {
+            top: 115px;
+            left: 0;
+        }
+
+        &:nth-child(12) {
+            top: 125px;
+            left: 90%;
+        }
+        
+        &:nth-child(13) {
+            top: 135px;
+            left: 0;
+        }
+
+        &:nth-child(14) {
+            top: 145px;
+            left: 80%;
+        }
+        
+        &:nth-child(15) {
+            top: 155px;
+            left: 0;
+        }
+
+        &:nth-child(16) {
+            top: 165px;
+            left: 95%;
+        }
+        
+        &:nth-child(17) {
+            top: 175px;
+            left: 0;
+        }
+
+        &:nth-child(18) {
+            top: 185px;
+            left: 69%;
+        }
+        
+        &:nth-child(19) {
+            top: 195px;
+            left: 0;
+        }
+
+        &:nth-child(20) {
+            top: 205px;
+            left: 10%;
+            width: 82%;
+        }
     }
+}
+
+.source-placeholder {
+    width: 30%;
+    height: 83px;
 }
 
 @keyframes placeholderAnimate {
     0%{ background-position: -468px 0; }
     100%{ background-position: 468px 0; }
+}
+
+.sidebar {
+    position: fixed;
+    display: none;
+    height: 100%;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    overflow: hidden;
+    z-index: 999;
+
+    &.open {
+        display: block;
+    }
+
+    & > .container-fluid {
+        height: 100%;
+    }
+
+    .backdrop {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        opacity: 0.5;
+        background-color: #000;
+    }
+}
+
+.sidebar-open {
+    overflow: hidden;
+    margin-right: 17px;
 }

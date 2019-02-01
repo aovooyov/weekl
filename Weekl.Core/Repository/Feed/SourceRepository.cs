@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Data;
 using Weekl.Core.Entities.Feed;
-using Weekl.Core.Extensions;
 using Weekl.Core.Helper;
 using Weekl.Core.Models;
 using Weekl.Core.Repository.Feed.Abstract;
@@ -39,22 +38,17 @@ namespace Weekl.Core.Repository.Feed
             return Get<Source>("FEED.SourceUpdate", CommandType.StoredProcedure, parameters);
         }
 
-        public Source Get(int sourceId)
+        public SourceItem Get(int sourceId)
         {
-            return Get<Source>("FEED.SourceGet", CommandType.StoredProcedure, GetParameter("@sourceId", sourceId));
+            return Get<SourceItem>("FEED.SourceGet", CommandType.StoredProcedure, GetParameter("@sourceId", sourceId));
         }
 
-        public IEnumerable<Source> List(params int[] sources)
+        public ICollection<SourceItem> List()
         {
-            var parameters = new[]
-            {
-                GetParameter("@sources", XmlHelper.ArrayToXml(sources))
-            };
-
-            return GetList<Source>("FEED.SourceList", CommandType.StoredProcedure, parameters);
+            return GetList<SourceItem>("FEED.SourceList", CommandType.StoredProcedure);
         }
 
-        public void Import(IEnumerable<SourceXml> sources)
+        public void Import(ICollection<SourceXml> sources)
         {
             ExecuteNonQuery("FEED.SourceImportXml", GetParameter("@sources", XmlHelper.SourcesToXml(sources)));
         }

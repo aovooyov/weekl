@@ -1,0 +1,22 @@
+<sidebar>
+    <div class="row">
+        <div class="col-md">
+            <h3 class="mt-4 mb-3">Каналы</h3>
+            <div class="row">
+                <div class="col-md">
+                    <div class="btn-group btn-group-sm mr-1 mb-1" *ngFor="let source of sources">
+                        <button type="button" class="btn btn-outline-dark text-left" [routerLink]="['/' + source.unique]">
+                            {{source.name}}
+                        </button>
+                        <button type="button" class="btn btn-outline-dark" (click)="selectSource(source)" *ngIf="subscriptions.indexOf(source.id) === -1">
+                            <i class="fas fa-check"></i>
+                        </button>
+                        <button type="button" class="btn btn-outline-dark" (click)="removeSource(source)" *ngIf="subscriptions.indexOf(source.id) > -1">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</sidebar>

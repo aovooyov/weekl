@@ -13,7 +13,7 @@ namespace Weekl.Service
         {
 #if DEBUG
             var service = new WinService();
-            AsyncContext.Run(service.StartAsync);
+            AsyncContext.Run(service.RunByTasksAsync);
             Thread.Sleep(Timeout.Infinite);
 #else
             ServiceBase[] ServicesToRun;

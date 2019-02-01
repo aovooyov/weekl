@@ -68,6 +68,9 @@
     <Folder Include="Functions" />
     <Folder Include="SYSTEM" />
     <Folder Include="SYSTEM\Stored Procedures" />
+    <Folder Include="LOG" />
+    <Folder Include="LOG\Stored Procedures" />
+    <Folder Include="LOG\Tables" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="FEED\Tables\FEED.Source.sql" />
@@ -104,6 +107,11 @@
     <Build Include="Security\Schemas\SYSTEM.sql" />
     <Build Include="FEED\Tables\FEED.Ignore.sql" />
     <Build Include="FEED\Stored Procedures\FEED.IgnoreAdd.sql" />
+    <Build Include="LOG\Tables\LOG.Entry.sql" />
+    <Build Include="Security\Schemas\LOG.sql" />
+    <Build Include="LOG\Stored Procedures\LOG.EntryAdd.sql" />
+    <Build Include="LOG\Stored Procedures\LOG.EntryClean.sql" />
+    <Build Include="LOG\Stored Procedures\LOG.EntryList.sql" />
   </ItemGroup>
   <ItemGroup>
     <RefactorLog Include="Weekl.Database.refactorlog" />

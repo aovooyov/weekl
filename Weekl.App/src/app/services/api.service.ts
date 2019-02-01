@@ -4,14 +4,19 @@ import { Injectable } from '@angular/core';
 import { environment } from '../../environments/environment';
 import { ArticleItem } from '../models/article-item.model';
 import { Article } from '../models/article.model';
+import { SourceItem } from '../models/source-item.model';
+import { ChannelItem } from '../models/channel-item.model';
 
 @Injectable()
 export class ApiService {
 
     private host;
     private getArticlesUrl = 'feed/articles/{date}?offset={offset}&take={take}';
+    private getArticlesBySourceUrl = 'feed/articles/{source}/{date}?offset={offset}&take={take}';
     private getArticleByIdUrl = 'feed/article/{articleId}';
     private getArticleByUniqueUrl = 'feed/article/{source}/{unique}';
+    private getSourcesUrl = 'feed/sources';
+    private getChannelsBySourceUrl = 'feed/channels/{sourceId}';
 
     constructor(
         private http: HttpClient
@@ -30,11 +35,20 @@ export class ApiService {
         return this.http.post<Response>(this.host + url, JSON.stringify(body), { withCredentials: true }); //headers: headers, 
     }
 
-    public getArticles(date: Date, offset: number, take: number) {
+    public getArticles(source: string, date: Date, offset: number, take: number) {
 
-        var ticks = ((date.getTime() * 10000) + 621355968000000000) - (date.getTimezoneOffset() * 600000000);
+        let ticks = ((date.getTime() * 10000) + 621355968000000000) - (date.getTimezoneOffset() * 600000000);
+        let url: string;
 
-        var url = this.getArticlesUrl
+        if(source) {
+            url = this.getArticlesBySourceUrl
+                .replace(/{source}/, source);
+        }
+        else {
+            url = this.getArticlesUrl;
+        }
+
+        url = url
             .replace(/{date}/, ticks.toString())
             .replace(/{offset}/, offset.toString())
             .replace(/{take}/, take.toString());
@@ -44,7 +58,7 @@ export class ApiService {
 
     public getArticleById(articleId: number) {
 
-        var url = this.getArticleByIdUrl
+        let url = this.getArticleByIdUrl
             .replace(/{articleId}/, articleId.toString());
 
         return this.get<Article>(url);
@@ -52,10 +66,18 @@ export class ApiService {
 
     public getArticleByUnique(source: string, unique: string) {
 
-        var url = this.getArticleByUniqueUrl
+        let url = this.getArticleByUniqueUrl
             .replace(/{source}/, source)
             .replace(/{unique}/, unique);
 
         return this.get<Article>(url);
+    }
+
+    public getSources() {
+        return this.get<SourceItem[]>(this.getSourcesUrl);
+    }
+
+    public getChannels(sourceId: number) {
+        return this.get<ChannelItem[]>(this.getChannelsBySourceUrl.replace(/{sourceId}/, sourceId.toString()));
     }
 }

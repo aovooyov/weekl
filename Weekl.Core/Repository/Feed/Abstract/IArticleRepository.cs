@@ -11,8 +11,8 @@ namespace Weekl.Core.Repository.Feed.Abstract
         Article Update(int articleId, string title, string subtitle, string description, string text, string link, DateTime date);
         Article Get(int articleId);
         Article Get(string source, string unique);
-        IEnumerable<ArticleItem> List(string filter, DateTime date, int offset, int take);
-        void Import(IEnumerable<ArticleXml> articles);
+        ICollection<ArticleItem> List(FilterXml filter, DateTime date, int offset, int take);
+        void Import(ICollection<ArticleXml> articles);
         void Clean();
     }
 }

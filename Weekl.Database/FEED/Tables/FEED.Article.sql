@@ -16,9 +16,9 @@
 )
 
 GO
-CREATE NONCLUSTERED INDEX [IX#FEED@Article@Date]
-    ON [FEED].[Article] ([Date] desc) INCLUDE ([Id], [Link], [Title], [Description]);
+create nonclustered index [IX#FEED@Article@Date]
+    on [FEED].[Article] ([Date] desc) include ([Id], [Link], [Title], [Description]);
 
 GO
-CREATE NONCLUSTERED INDEX [IX#FEED@Article@Unique]
-    ON [FEED].[Article] ([Unique]);
+create unique nonclustered index [IX#FEED@Article@Unique]
+    on [FEED].[Article] ([Unique]);

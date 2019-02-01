@@ -117,10 +117,14 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Web.config" />
+    <Content Include="Web.config">
+      <SubType>Designer</SubType>
+    </Content>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Controllers\Admin\AdminSourceController.cs" />
     <Compile Include="Controllers\Feed\ArticleController.cs" />
+    <Compile Include="Controllers\Feed\ChannelController.cs" />
     <Compile Include="Controllers\Feed\SourceController.cs" />
     <Compile Include="Infrastructure\ApiConfig.cs" />
     <Compile Include="Infrastructure\Configuration\Cors.cs" />
@@ -130,6 +134,7 @@
     <Compile Include="Models\Feed\ArticleItemModel.cs" />
     <Compile Include="Models\Feed\ArticleModel.cs" />
     <Compile Include="Models\Feed\ArticlesModel.cs" />
+    <Compile Include="Models\Feed\ChannelItemModel.cs" />
     <Compile Include="Models\Feed\SourceItemModel.cs" />
     <Compile Include="Models\Feed\SourceModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

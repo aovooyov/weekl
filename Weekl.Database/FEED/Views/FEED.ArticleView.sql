@@ -1,4 +1,5 @@
 ﻿create view [FEED].[ArticleView]
+with schemabinding
 as
 	select 
 		a.[Id],
@@ -9,12 +10,20 @@ as
 		a.[Date],
 		a.[ImageUrl],
 		a.[Unique],
-		s.[Id] as SourceId,
-		s.[Name] as SourceName,
-		s.[Link] as SourceLink,
-		s.[ImageUrl] as SourceImageUrl,
-		s.[Unique] as SourceUnique
+		c.[SourceId],
+		s.[Name] as [SourceName],
+		s.[Link] as [SourceLink],
+		s.[ImageUrl] as [SourceImageUrl],
+		s.[Unique] as [SourceUnique]
 	from [FEED].[Article] a
-		inner join [FEED].[ChannelView] c on c.[Id] = a.[ChannelId]
-		inner join [FEED].[SourceView] s on s.[Id] = c.[SourceId]
-	WHERE DATEADD(day, -7, GETDATE()) < a.[Date]
+		inner join [FEED].[Channel] c on c.[Id] = a.[ChannelId]
+		inner join [FEED].[Source] s on s.[Id] = c.[SourceId]
+	--where dateadd(day, -7, getdate()) < a.[Date];
+
+go
+create unique clustered index [IX#FEED@ArticleView@Unique]
+    on [FEED].[ArticleView] ([Unique]);
+
+go
+create nonclustered index [IX#FEED@ArticleView@Date@SourceId]
+    on [FEED].[ArticleView] ([Date] desc, [SourceId]);

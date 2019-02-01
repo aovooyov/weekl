@@ -13,6 +13,17 @@ as
     set cursor_close_on_commit off
 begin	
 
+	delete from [FEED].[Article]
+	where [Id] in (select top 1000 [Id] from [FEED].[ArticleWeekAgoView] order by [Date] asc)
+
+	;with #dublicates as 
+	(
+		select row_number() over (partition by [Unique] order by [Unique] desc) as [RowNumber], [Id], [Unique], [Date] from [FEED].[Article]
+	)
+	delete
+	from [FEED].[Article]
+	where [Id] in (select [Id] from #dublicates where [RowNumber] > 1)
+
 	;with #ignore as 
 	(
 		select [Cause] from [FEED].[Ignore] where [Type] = 1
@@ -22,9 +33,6 @@ begin
 		[ImageUrl] = null
 	where [ImageUrl] in (select [Cause] from #ignore)
 
-	delete from [FEED].[Article]
-	where [Id] in (select top 1000 [Id] from [FEED].[ArticleWeekAgoView] order by [Date] asc)
-	
 	return 0;
 end
 go

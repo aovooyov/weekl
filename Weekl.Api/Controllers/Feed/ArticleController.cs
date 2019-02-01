@@ -17,7 +17,7 @@ namespace Weekl.Api.Controllers.Feed
             _articles = articles;
         }
 
-        [Route("{date}")]
+        [Route("{date:long}")]
         [HttpGet]
         public IHttpActionResult Last(long date, int offset = 0, int take = 10)
         {            
@@ -26,6 +26,18 @@ namespace Weekl.Api.Controllers.Feed
                 .Select(a => new ArticleItemModel(a))
                 .ToList();
             
+            return Ok(articles);
+        }
+
+        [Route("{source}/{date:long}")]
+        [HttpGet]
+        public IHttpActionResult LastBySource(string source, long date, int offset = 0, int take = 10)
+        {
+            var articles = _articles
+                .List(FilterXml.BySource(source), new DateTime(date), offset, take)
+                .Select(a => new ArticleItemModel(a))
+                .ToList();
+
             return Ok(articles);
         }
 

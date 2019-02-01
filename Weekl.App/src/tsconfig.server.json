@@ -4,7 +4,9 @@
     "outDir": "../dist/app",
     "baseUrl": "./",
     "module": "commonjs",
-    "types": []
+    "types": [
+      "node"
+    ]
   },
   "exclude": [
     "test.ts",
