@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using CodeHollow.FeedReader;
+using HtmlAgilityPack;
 using NLog;
 using ReadSharp;
 using Weekl.Core.Entities.Feed;
@@ -22,6 +24,18 @@ namespace Weekl.Core.Service
         private readonly IArticleRepository _articleRepository;
         private readonly ILogger _logger;
 
+        private ICollection<string> _ignoreList;
+        private ICollection<string> IgnoreList
+        {
+            get
+            {
+                return _ignoreList ?? (_ignoreList = _articleRepository
+                           .IgnoreList()
+                           .Select(i => i.Cause)
+                           .ToList());
+            }
+        }
+
         public RssService(
             ISourceRepository sourceRepository,
             IChannelRepository channelRepository,
@@ -33,6 +47,7 @@ namespace Weekl.Core.Service
             _logger = LogManager.GetCurrentClassLogger();
         }
 
+        #region GetFeed
         public async Task<ICollection<ArticleXml>> GetFeed()
         {
             var sources = _sourceRepository.List();
@@ -144,9 +159,15 @@ namespace Weekl.Core.Service
                 //Debug.WriteLine(
                 //    $"{article.Date}\n{article.Title}\n{article.SubTitle}\n{article.Description}\n{article.Link}\n{article.Category}\n\n");
 
-                await FillArticleContentAsync(article);
-
-                articles.Add(article);
+                try
+                {
+                    await FillArticleContentAsync(article);
+                    articles.Add(article);
+                }
+                catch (Exception e)
+                {
+                    _logger.Error(e);
+                }
 
                 var time = stopwatch.Elapsed.TotalMilliseconds;
                 times.Add(time);
@@ -162,8 +183,9 @@ namespace Weekl.Core.Service
 
             return articles;
         }
+        #endregion
 
-        public async Task<int> SyncFeed()
+        public async Task<int> SyncFeedAsync()
         {
             var stopwatch = Stopwatch.StartNew();
             var sources = _sourceRepository.List();
@@ -173,22 +195,23 @@ namespace Weekl.Core.Service
             {
                 var channels = _channelRepository.ListBySourceId(source.Id);
 
-                _logger.Info($"[{source.Unique}] Source: {source.Name}, Channels: {channels.Count()}");
+                _logger.Info($"[{source.Unique}]: Source {source.Name}, Channels: {channels.Count()}");
 
                 foreach (var channel in channels)
                 {
-                    articleCount += await SyncFeed(channel);
+                    var count = await SyncFeedAsync(channel);
+                    articleCount += count;
                 }
             }
 
             var time = stopwatch.Elapsed.TotalMilliseconds;
             stopwatch.Stop();
-            _logger.Info($"Total time: {time}");
+            _logger.Info($"[{DateTime.Now}]: Total time {time}");
 
             return articleCount;
         }
 
-        public async Task<int> SyncFeed(SourceItem source)
+        public async Task<int> SyncFeedAsync(SourceItem source)
         {
             if (source == null)
             {
@@ -198,24 +221,24 @@ namespace Weekl.Core.Service
             var channels = _channelRepository.ListBySourceId(source.Id);
             var articleCount = 0;
 
-            _logger.Info($"[{source.Unique}] {source.Name}, Channels: {channels.Count}");
+            _logger.Info($"[{source.Unique}]: {source.Name} Channels: {channels.Count}");
 
             foreach (var channel in channels)
             {
-                articleCount += await SyncFeed(channel);
+                articleCount += await SyncFeedAsync(channel);
             }
 
             return articleCount;
         }
 
-        public async Task<int> SyncFeed(ChannelItem channel)
+        public async Task<int> SyncFeedAsync(ChannelItem channel)
         {
             if (channel == null)
             {
                 throw new ArgumentNullException();
             }
 
-            _logger.Info($"[{channel.SourceUnique}] Channel: {channel.Name} {channel.Link}");
+            _logger.Info($"[{channel.SourceUnique}]: Channel {channel.Name} {channel.Link}");
 
             Feed feed;
 
@@ -226,7 +249,7 @@ namespace Weekl.Core.Service
             }
             catch (Exception e)
             {
-                _logger.Error($"[{channel.SourceUnique}] Error: {e.Message}");
+                _logger.Error($"[{channel.SourceUnique}]: {e.Message}");
                 _logger.Error(e.StackTrace);
                 return 0;
             }
@@ -270,7 +293,7 @@ namespace Weekl.Core.Service
                     var dateString = Regex.Replace(item.PublishingDateString, "\\+0(\\d)00", string.Empty);
                     date = DateTime.Parse(dateString);
 
-                    _logger.Trace($"[{channel.SourceUnique}] PublishingDateString: {item.PublishingDateString}, PublishingDate: {item.PublishingDate}, Date: {date}");
+                    //_logger.Trace($"[{channel.SourceUnique}] PublishingDateString: {item.PublishingDateString}, PublishingDate: {item.PublishingDate}, Date: {date}");
                 }
 
                 var article = new ArticleXml
@@ -284,12 +307,18 @@ namespace Weekl.Core.Service
                     Category = string.Join("; ", item.Categories)
                 };
 
-                //Debug.WriteLine(
-                //    $"{article.Date}\n{article.Title}\n{article.SubTitle}\n{article.Description}\n{article.Link}\n{article.Category}\n\n");
+                Debug.WriteLine(
+                    $"{article.Date}\n{article.Title}\n{article.SubTitle}\n{article.Description}\n{article.Link}\n{article.Category}\n\n");
 
-                await FillArticleContentAsync(article);
-
-                articles.Add(article);
+                try
+                {
+                    await FillArticleContentAsync(article);
+                    articles.Add(article);
+                }
+                catch (Exception e)
+                {
+                    _logger.Error(e);
+                }
 
                 if (articles.Count < 10)
                 {
@@ -300,7 +329,7 @@ namespace Weekl.Core.Service
                 {
                     _articleRepository.Import(articles);
 
-                    _logger.Info($"[{channel.SourceUnique}] Articles: {articles.Count}");
+                    _logger.Info($"[{channel.SourceUnique}]: Articles {articles.Count}");
                     articlesCount += articles.Count;
                 }
                 catch (Exception e)
@@ -320,7 +349,7 @@ namespace Weekl.Core.Service
             {
                 _articleRepository.Import(articles);
 
-                _logger.Info($"[{channel.SourceUnique}] Articles: {articles.Count}");
+                _logger.Info($"[{channel.SourceUnique}]: Articles {articles.Count}");
                 articlesCount += articles.Count;
             }
             catch (Exception e)
@@ -364,14 +393,39 @@ namespace Weekl.Core.Service
 
             try
             {
-                var content = await reader.Read(new Uri(article.Link));
+                var contentArticle = await reader.Read(new Uri(article.Link));
+                
+                var document = new HtmlDocument();
+                document.LoadHtml(contentArticle.Content);
 
-                article.Text = content.Content;
+                var imgNodes = document.QuerySelectorAll("img");
+                var ignoreList = IgnoreList.ToArray();
+                var ignoreImgNodes = imgNodes
+                    .Where(img => ignoreList.Contains(img.GetAttributeValue("src", string.Empty)))
+                    .ToList();
 
-                if (content.Images.Any())
+                if (ignoreImgNodes.Count > 0)
                 {
-                    foreach (var contentImage in content.Images)
+                    foreach (var imgNode in ignoreImgNodes)
                     {
+                        _logger.Info($"[{DateTime.Now}]: Article Content Ignore {imgNode.GetAttributeValue("src", string.Empty)}");
+                        imgNode.Remove();
+                    }
+                }
+                
+                article.Text = document.DocumentNode.InnerHtml?.Trim();
+
+                if (contentArticle.Images.Any())
+                {
+                    foreach (var contentImage in contentArticle.Images)
+                    {
+                        if (contentImage?.Uri == null)
+                        {
+                            continue;
+                        }
+
+                        //_logger.Info($"Article image: {contentImage.Uri}");
+
                         var url = contentImage.Uri.ToString();
                         if (url.StartsWith("http") || url.StartsWith("data"))
                         {
@@ -388,6 +442,8 @@ namespace Weekl.Core.Service
 
         public void Clean()
         {
+            _logger.Info($"[{DateTime.Now}]: Clean Articles");
+
             _articleRepository.Clean();
         }
     }

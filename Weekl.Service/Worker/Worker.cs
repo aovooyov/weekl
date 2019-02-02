@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -25,21 +25,29 @@ namespace Weekl.Service.Worker
             _logger = LogManager.GetCurrentClassLogger();
         }
 
-        public async Task SyncFeed()
+        public async Task SyncFeedAsync()
         {
             while (true)
             {
-                _logger.Info("[Sync Feed]");
+                _logger.Info($"[Sync Feed] {DateTime.Now}: Start");
 
-                var count = await _rssService.SyncFeed();
+                try
+                {
+                    var total = await _rssService.SyncFeedAsync();
+                    _logger.Info($"[Sync Feed] {DateTime.Now}: Total Articles Count: {total}");
+                }
+                catch (Exception e)
+                {
+                    _logger.Info($"[SyncFeedAsync] {DateTime.Now}: error");
+                    _logger.Error(e);
+                }
 
-                _logger.Info($"[Sync Feed] Total Articles Count: {count}");
-
-                Thread.Sleep(TimeSpan.FromMinutes(5));
+                _logger.Info($"[Sync Feed] Restart {DateTime.Now}");
+                await Task.Delay(TimeSpan.FromMinutes(1));
             }
         }
 
-        public async Task SyncFeed(int sourceId)
+        public async Task SyncFeedAsync(int sourceId)
         {
             while (true)
             {
@@ -51,7 +59,7 @@ namespace Weekl.Service.Worker
 
                 _logger.Info($"[{source.Unique}] Sync Feed: {source.Name}");
 
-                var count = await _rssService.SyncFeed(source);
+                var count = await _rssService.SyncFeedAsync(source);
 
                 _logger.Info($"[{source.Unique}] Articles: {count}");
 
@@ -59,26 +67,34 @@ namespace Weekl.Service.Worker
             }
         }
 
-        public async Task SyncFeedAsync()
+        public async Task SyncFeedByTasksAsync()
         {
             while (true)
             {
                 _logger.Info("[SyncFeedAsync]: start");
 
-                var sources = _sourceRepository.List();
-                var tasks = sources
-                    .Select(source => _rssService.SyncFeed(source))
-                    .ToList();
-
-                while (tasks.Count > 0)
+                try
                 {
-                    var completed = await Task.WhenAny(tasks).ConfigureAwait(false);
-                    tasks.Remove(completed);
+                    var sources = _sourceRepository.List();
+                    var tasks = sources
+                        .Select(source => _rssService.SyncFeedAsync(source))
+                        .ToList();
+
+                    while (tasks.Count > 0)
+                    {
+                        var completed = await Task.WhenAny(tasks).ConfigureAwait(false);
+                        tasks.Remove(completed);
+                    }
+
+                    _logger.Info("[SyncFeedAsync]: done");
+
+                    _rssService.Clean();
                 }
-
-                _logger.Info("[SyncFeedAsync]: done");
-
-                _rssService.Clean();
+                catch (Exception e)
+                {
+                    _logger.Info("[SyncFeedAsync]: error");
+                    _logger.Error(e);
+                }
 
                 await Task.Delay(TimeSpan.FromMinutes(5));
             }

@@ -14,5 +14,6 @@ namespace Weekl.Core.Repository.Feed.Abstract
         ICollection<ArticleItem> List(FilterXml filter, DateTime date, int offset, int take);
         void Import(ICollection<ArticleXml> articles);
         void Clean();
+        ICollection<Ignore> IgnoreList();
     }
 }

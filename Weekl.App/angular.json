@@ -29,7 +29,7 @@
               },
               {
                 "glob": "web.config",
-                "input": "/",
+                "input": "src/",
                 "output": "/"
               }
             ],

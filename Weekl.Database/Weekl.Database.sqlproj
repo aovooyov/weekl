@@ -112,6 +112,7 @@
     <Build Include="LOG\Stored Procedures\LOG.EntryAdd.sql" />
     <Build Include="LOG\Stored Procedures\LOG.EntryClean.sql" />
     <Build Include="LOG\Stored Procedures\LOG.EntryList.sql" />
+    <Build Include="FEED\Stored Procedures\FEED.IgnoreList.sql" />
   </ItemGroup>
   <ItemGroup>
     <RefactorLog Include="Weekl.Database.refactorlog" />

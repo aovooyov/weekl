@@ -34,44 +34,97 @@ namespace Weekl.ConsoleApp
             _rssService = new RssService(_sourceRepository, _channelRepository, _articleRepository);
         }
 
-        public async Task ReadFeed()
+        //public async Task GetFeed()
+        //{
+        //    var times = new List<double>();
+
+        //    var sources = _sourceRepository.List();
+
+        //    foreach (var source in sources)
+        //    {
+        //        Console.WriteLine($"{source.Name}\n");
+
+        //        var time = _stopwatch.Elapsed.TotalMilliseconds;
+        //        times.Add(time);
+        //        _stopwatch.Restart();
+
+        //        var articles = await _rssService.GetFeed(source);
+
+        //        foreach (var article in articles)
+        //        {
+        //            Console.WriteLine($"{article.Date}\n{article.Title}\n{article.SubTitle}\n{article.Description}\n{article.Link}\n{article.Category}\n\n");
+        //            Console.WriteLine($"{article.Text}\n");
+        //        }
+
+        //        Console.WriteLine($"\n{time}\n");
+        //    }
+
+        //    Console.WriteLine($"Average time {times.Average()}");
+        //}
+
+        public async Task SyncFeedAsync()
         {
-            var times = new List<double>();
-
-            var sources = _sourceRepository.List();
-
-            foreach (var source in sources)
+            while (true)
             {
-                Console.WriteLine($"{source.Name}\n");
+                Console.WriteLine("[SyncFeedAsync]: start");
 
-                var time = _stopwatch.Elapsed.TotalMilliseconds;
-                times.Add(time);
-                _stopwatch.Restart();
-
-                var articles = await _rssService.GetFeed(source);
-
-                foreach (var article in articles)
+                var total = 0;
+                try
                 {
-                    Console.WriteLine($"{article.Date}\n{article.Title}\n{article.SubTitle}\n{article.Description}\n{article.Link}\n{article.Category}\n\n");
-                    Console.WriteLine($"{article.Text}\n");
+                    total = await _rssService.SyncFeedAsync();
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine("[SyncFeedAsync]: error");
+                    Console.WriteLine(e.ToString());
+                }
+                finally
+                {
+                    Console.WriteLine($"[SyncFeedAsync]: total articles {total}");
+                    Console.WriteLine("[SyncFeedAsync]: clean...");
+
+                    _rssService.Clean();
+
+                    Console.WriteLine("[SyncFeedAsync]: done");
+
+                    await Task.Delay(TimeSpan.FromMinutes(5));
+                }
+            }
+        }
+
+        public async Task SyncFeedByTasksAsync()
+        {
+            while (true)
+            {
+                Console.WriteLine("[SyncFeedAsync]: start");
+
+                try
+                {
+                    var sources = _sourceRepository.List();
+                    var tasks = sources
+                        .Select(source => _rssService.SyncFeedAsync(source))
+                        .ToList();
+
+                    while (tasks.Count > 0)
+                    {
+                        var completed = await Task.WhenAny(tasks).ConfigureAwait(false);
+                        tasks.Remove(completed);
+
+                        Console.WriteLine($"total time: {completed.Result}");
+                    }
+
+                    Console.WriteLine("[SyncFeedAsync]: done");
+
+                    _rssService.Clean();
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine("[SyncFeedAsync]: error");
+                    Console.WriteLine(e.ToString());
                 }
 
-                Console.WriteLine($"\n{time}\n");
+                await Task.Delay(TimeSpan.FromMinutes(5));
             }
-
-            Console.WriteLine($"Average time {times.Average()}");
-        }
-
-        public void ReedFeedInfo()
-        {
-            _rssService.GetFeed();
-        }
-
-        public void SyncFeed()
-        {
-            var time = _rssService.SyncFeed();
-
-            Console.WriteLine($"total time: {time}");
         }
 
         public void Import()
@@ -100,87 +153,5 @@ namespace Weekl.ConsoleApp
 
             _sourceRepository.Import(sources);
         }
-
-        public void ImportManually()
-        {
-            var sources = new List<SourceXml>
-            {
-                new SourceXml
-                {
-                    Name = "Газета.Ru - Первая полоса",
-                    Source = "https://www.gazeta.ru",
-                    Channel = "https://www.gazeta.ru/export/rss/first.xml",
-                    Encoding = "ISO-8859-1"
-                },
-                new SourceXml
-                {
-                    Name = "Газета.Ru - Новости дня",
-                    Source = "https://www.gazeta.ru",
-                    Channel = "https://www.gazeta.ru/export/rss/lenta.xml",
-                    Encoding = "ISO-8859-1"
-                }
-            };
-
-            _sourceRepository.Import(sources);
-        }
-
-        public void DefaultSourceMain()
-        {
-
-
-            //var connectionString = ConfigurationManager.ConnectionStrings["Weekl"].ConnectionString;
-            //var sourceRepository = new SourceRepository(connectionString);
-
-            //var source = sourceRepository.Add(
-            //    "Community",
-            //    "https://thecommunity.ru",
-            //    "https://thecommunity.ru/rss.xml",
-            //    "body #full-story",
-            //    @"Community - новостной портал об IT-технологиях\nРегулярно на сайте публикуются самые свежие и актуальные новости из мира IT-технологий, интересные статьи и материалы с различных конференций.",
-            //    "utf-8");
-
-            //Console.WriteLine($"{source.Id} {source.Name} {source.Link} {source.Rss} {source.Selector}");
-
-            //source = sourceRepository.Add(
-            //    "Лента.Ру (Новости)",
-            //    "http://lenta.ru",
-            //    "http://lenta.ru/rss/news",
-            //    "body .b-topic-layout .b-topic-layout__content .b-topic-layout__left .b-topic__content .b-text",
-            //    @"Lenta.Ru (Лента.Ру)",
-            //    "utf-8");
-
-            //Console.WriteLine($"{source.Id} {source.Name} {source.Link} {source.Rss} {source.Selector}");
-
-            //source = sourceRepository.Add(
-            //    "Лента.Ру (Самые свежие и самые важные новости)",
-            //    "http://lenta.ru",
-            //    "http://lenta.ru/rss/top7",
-            //    "body .b-topic-layout .b-topic-layout__content .b-topic-layout__left .b-topic__content .b-text",
-            //    @"Lenta.Ru (Лента.Ру)",
-            //    "utf-8");
-
-            //Console.WriteLine($"{source.Id} {source.Name} {source.Link} {source.Rss} {source.Selector}");
-
-            //source = sourceRepository.Add(
-            //    "TJ: все новости и статьи",
-            //    "https://tjournal.ru",
-            //    "https://tjournal.ru/rss/all",
-            //    "body .entry_content--full .b-article",
-            //    @"TJ",
-            //    "utf-8");
-
-            //Console.WriteLine($"{source.Id} {source.Name} {source.Link} {source.Rss} {source.Selector}");
-
-            //source = sourceRepository.Add(
-            //    "КиноПоиск: Новости",
-            //    "https://www.kinopoisk.ru",
-            //    "https://www.kinopoisk.ru/news.rss",
-            //    "body .article .article__content",
-            //    @"Свежая и интересная информация из мира кино: новости, репортажи, рецензии, трейлеры...",
-            //    "windows-1251");
-
-            //Console.WriteLine($"{source.Id} {source.Name} {source.Link} {source.Rss} {source.Selector}");
-        }
-
     }
 }

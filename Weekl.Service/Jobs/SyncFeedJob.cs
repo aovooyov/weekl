@@ -12,7 +12,7 @@ namespace Weekl.Service.Jobs
             var sourceId = context.JobDetail.JobDataMap.GetIntValue("SourceId");
 
             var worker = WorkerContainer.Current.Get<IWorker>();
-            await Task.Run(() => worker.SyncFeed(sourceId));
+            await Task.Run(() => worker.SyncFeedAsync(sourceId));
         }
     }
 }

@@ -81,5 +81,10 @@ namespace Weekl.Core.Repository.Feed
         {
             ExecuteNonQuery("FEED.ArticleClean");
         }
+
+        public ICollection<Ignore> IgnoreList()
+        {
+            return GetList<Ignore>("FEED.IgnoreList", CommandType.StoredProcedure);
+        }
     }
 }

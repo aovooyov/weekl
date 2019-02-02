@@ -75,6 +75,7 @@
   <ItemGroup>
     <Compile Include="Entities\Feed\ArticleItem.cs" />
     <Compile Include="Entities\Feed\ChannelItem.cs" />
+    <Compile Include="Entities\Feed\Ignore.cs" />
     <Compile Include="Entities\Feed\SourceItem.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="Extensions\XmlExtensions.cs" />

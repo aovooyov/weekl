@@ -1,16 +1,11 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Configuration.Install;
-using System.Linq;
 using System.ServiceProcess;
-using System.Threading.Tasks;
 
 namespace Weekl.Service
 {
     [RunInstaller(true)]
-    public partial class WinServiceInstaller : System.Configuration.Install.Installer
+    public partial class WinServiceInstaller : Installer
     {
         private ServiceInstaller _serviceInstaller;
         private ServiceProcessInstaller _processInstaller;
@@ -23,8 +18,8 @@ namespace Weekl.Service
             _processInstaller = new ServiceProcessInstaller();
 
             _processInstaller.Account = ServiceAccount.LocalSystem;
-            _serviceInstaller.StartType = ServiceStartMode.Manual;
-            _serviceInstaller.ServiceName = "WeeklService";
+            _serviceInstaller.StartType = ServiceStartMode.Automatic;
+            _serviceInstaller.ServiceName = "Weekl.Service";
 
             Installers.Add(_processInstaller);
             Installers.Add(_serviceInstaller);

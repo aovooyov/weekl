@@ -1,6 +1,6 @@
 
 export const environment = {
-    host: 'http://localhost:4201/',
-    production: false
+  host: 'http://local.com:8080/',
+  production: false
   };
   
