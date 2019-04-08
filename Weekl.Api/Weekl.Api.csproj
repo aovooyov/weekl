@@ -51,8 +51,8 @@
     <Reference Include="Microsoft.Owin.Host.SystemWeb, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Owin.Host.SystemWeb.4.0.0\lib\net451\Microsoft.Owin.Host.SystemWeb.dll</HintPath>
     </Reference>
-    <Reference Include="Newtonsoft.Json, Version=11.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.11.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
+    <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.12.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="Ninject, Version=3.3.3.0, Culture=neutral, PublicKeyToken=c7192dc5380945e7, processorArchitecture=MSIL">
       <HintPath>..\packages\Ninject.3.3.3\lib\net45\Ninject.dll</HintPath>
@@ -126,6 +126,7 @@
     <Compile Include="Controllers\Feed\ArticleController.cs" />
     <Compile Include="Controllers\Feed\ChannelController.cs" />
     <Compile Include="Controllers\Feed\SourceController.cs" />
+    <Compile Include="Controllers\Movie\MovieController.cs" />
     <Compile Include="Infrastructure\ApiConfig.cs" />
     <Compile Include="Infrastructure\Configuration\Cors.cs" />
     <Compile Include="Infrastructure\CorsConfig.cs" />
@@ -137,6 +138,7 @@
     <Compile Include="Models\Feed\ChannelItemModel.cs" />
     <Compile Include="Models\Feed\SourceItemModel.cs" />
     <Compile Include="Models\Feed\SourceModel.cs" />
+    <Compile Include="Models\Movie\MovieModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
   </ItemGroup>

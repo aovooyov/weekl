@@ -1,4 +1,19 @@
 $fa-font-path: '../../node_modules/@fortawesome/fontawesome-free/webfonts';
-$body-bg: #ededed !default;
+// $body-bg: #ededed !default;
+$body-bg: #222 !default;
+$text-muted: #ddd !default;
+
+.lead, h3 {
+    color: #ddd !important;
+}
+
+.card-title {
+    color: #222 !important;
+}
+
+// @media (prefers-color-scheme: dark) {
+//     $body-bg: #222 !default;
+// }
+
 // $font-family-sans-serif: Georgia,"Droid Serif","Times New Roman",Palatino,"Hoefler Text",Baskerville,serif !important;
 // $font-family-sans-serif: Helvetica,sans-serif;
